@@ -287,7 +287,7 @@
       // Filtrar por categoría y buscador
       const productosFiltrados = arrayProductos.filter(prod => {
         const cumpleCategoria = (categoriaSeleccionada === "Todos" || prod.categoria === categoriaSeleccionada);
-        const cumpleBusqueda = prod.nombre.toLowerCase().includes(textoBusqueda);
+        const cumpleBusqueda = prod.nombre && prod.nombre.toLowerCase().includes(textoBusqueda);
         return cumpleCategoria && cumpleBusqueda;
       });
 
@@ -296,7 +296,7 @@
         return;
       }
 
-      // Dibujar cada tarjeta de producto (Sin usar parseFloat para evitar el NaN)
+      // Dibujar cada tarjeta de producto YA CON LAS VARIABLES CORRECTAS (precioPieza y precioMayoreo)
       productosFiltrados.forEach(prod => {
         const card = document.createElement("div");
         card.className = "product-card";
@@ -306,9 +306,9 @@
             <img class="product-image" src="${prod.imagen || 'https://via.placeholder.com/150?text=Sin+Foto'}" alt="${prod.nombre}">
           </div>
           <div class="product-info">
-            <div class="product-name">${prod.nombre}</div>
-            <div class="price-tag">$${prod.precioPza} <span style="font-size:0.7rem; color:#666; font-weight:400;">Pza</span></div>
-            <div class="wholesale-tag">Mayoreo: $${prod.precioMay}</div>
+            <div class="product-name">${prod.nombre || 'Producto sin nombre'}</div>
+            <div class="price-tag">$${prod.precioPieza} <span style="font-size:0.7rem; color:#666; font-weight:400;">Pza</span></div>
+            <div class="wholesale-tag">Mayoreo: $${prod.precioMayoreo}</div>
           </div>
         `;
         container.appendChild(card);
