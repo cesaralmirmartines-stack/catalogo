@@ -1,124 +1,337 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mi Abarrotes - Catálogo Digital</title>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-    <style>
-        :root {
-            --bg-color: #fafafa; --card-bg: #f5f5f5; --primary-orange: #c84b31;
-            --text-dark: #333; --text-light: #888; --pill-green-bg: #e6f7ef; --pill-green-text: #2d8a5c;
-        }
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: var(--bg-color); margin: 0; padding: 15px; color: var(--text-dark); }
-        .app-container { max-width: 450px; margin: 0 auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
-        
-        .header { display: flex; align-items: center; margin-bottom: 20px; }
-        .logo-icon { background-color: var(--primary-orange); color: white; padding: 10px; border-radius: 12px; margin-right: 15px; font-size: 24px; width: 30px; height: 30px; text-align: center; line-height: 30px; }
-        .header-text h1 { margin: 0; font-size: 20px; font-weight: bold; }
-        .header-text p { margin: 0; font-size: 11px; color: var(--text-light); letter-spacing: 1px; text-transform: uppercase; }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mi Abarrotes - Catálogo Digital</title>
+  
+  <!-- Firebase App y Database SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 
-        .search-bar { width: 100%; padding: 14px 15px; border-radius: 20px; border: 1px solid #eee; background-color: #fcfcfc; margin-bottom: 20px; outline: none; box-sizing: border-box; font-size: 16px; }
-        .categories { display: flex; gap: 10px; margin-bottom: 25px; overflow-x: auto; padding-bottom: 5px; }
-        .categories::-webkit-scrollbar { display: none; }
-        .pill { padding: 8px 18px; border-radius: 20px; border: 1px solid #eee; font-size: 14px; background-color: white; cursor: pointer; white-space: nowrap; }
-        .pill.active { background-color: #1a1a1a; color: white; border-color: #1a1a1a; }
+  <!-- Estilos CSS Incorporados para un Diseño Premium -->
+  <style>
+    /* Configuración Global y Fuentes */
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
 
-        .products-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
-        .product-card { background-color: var(--card-bg); border-radius: 16px; padding: 12px; position: relative; display: flex; flex-direction: column; justify-content: space-between; }
-        .category-tag { background-color: white; font-size: 9px; padding: 4px 8px; border-radius: 10px; font-weight: bold; position: absolute; top: 12px; left: 12px; text-transform: uppercase; }
-        .product-image-container { width: 100%; height: 110px; display: flex; align-items: center; justify-content: center; margin: 15px 0 8px 0; border-radius: 8px; overflow: hidden; }
-        .product-image-container img { max-width: 100%; max-height: 100%; object-fit: contain; }
-        .product-info { background-color: white; padding: 12px; border-radius: 12px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
-        .product-title { margin: 0 0 8px 0; font-size: 15px; font-weight: 500; }
-        .price-container { font-size: 20px; font-weight: bold; color: var(--primary-orange); margin-bottom: 6px; }
-        .price-unit { font-size: 10px; color: var(--text-light); font-weight: normal; }
-        .wholesale { display: inline-block; background-color: var(--pill-green-bg); color: var(--pill-green-text); padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: bold; }
-        
-        footer { text-align: center; margin-top: 40px; font-size: 11px; color: #ccc; letter-spacing: 1px; text-transform: uppercase; }
-    </style>
+    body {
+      background-color: #f8f9fa;
+      color: #333333;
+      padding-bottom: 40px;
+    }
+
+    /* Encabezado / Navbar */
+    header {
+      background: linear-gradient(135deg, #c84b31, #ff6f52);
+      color: white;
+      text-align: center;
+      padding: 30px 15px;
+      border-bottom-left-radius: 25px;
+      border-bottom-right-radius: 25px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      margin-bottom: 25px;
+    }
+
+    header h1 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    header p {
+      font-size: 0.9rem;
+      opacity: 0.9;
+      margin-top: 5px;
+    }
+
+    /* Buscador de Productos */
+    .search-container {
+      padding: 0 15px;
+      max-width: 500px;
+      margin: 0 auto 25px auto;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 12px 20px;
+      border: 2px solid #e0e0e0;
+      border-radius: 50px;
+      font-size: 0.95rem;
+      outline: none;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+
+    .search-input:focus {
+      border-color: #c84b31;
+      box-shadow: 0 4px 12px rgba(200, 75, 49, 0.15);
+    }
+
+    /* Menú Deslizable de Categorías (Estilo App Moderna) */
+    .categories-menu {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding: 5px 15px 15px 15px;
+      white-space: nowrap;
+      scrollbar-width: none; /* Ocultar barra en Firefox */
+    }
+
+    .categories-menu::-webkit-scrollbar {
+      display: none; /* Ocultar barra en Chrome/Safari */
+    }
+
+    .category-btn {
+      background-color: white;
+      color: #555555;
+      border: 1px solid #e0e0e0;
+      padding: 8px 18px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+    }
+
+    .category-btn.active, .category-btn:hover {
+      background-color: #c84b31;
+      color: white;
+      border-color: #c84b31;
+      box-shadow: 0 4px 10px rgba(200, 75, 49, 0.2);
+    }
+
+    /* Contenedor de Secciones */
+    .section-title {
+      padding: 0 15px;
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #222222;
+      margin: 15px 0 10px 0;
+      border-left: 4px solid #c84b31;
+      margin-left: 15px;
+    }
+
+    /* Grid de Tarjetas de Productos */
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr); /* 2 columnas en celular */
+      gap: 12px;
+      padding: 10px 15px;
+    }
+
+    @media (min-width: 768px) {
+      .products-grid {
+        grid-template-columns: repeat(4, 1fr); /* 4 columnas en computadora */
+      }
+    }
+
+    /* Tarjeta de Producto (Card) */
+    .product-card {
+      background-color: white;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      border: 1px solid #f0f0f0;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.2s ease;
+    }
+
+    .product-card:active {
+      transform: scale(0.98);
+    }
+
+    .product-image-wrapper {
+      position: relative;
+      width: 100%;
+      padding-top: 100%; /* Cuadrado perfecto 1:1 */
+      background-color: #fdfdfd;
+    }
+
+    .product-image {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain; /* No deforma la foto del producto */
+      padding: 8px;
+    }
+
+    .product-info {
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+    }
+
+    .product-name {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #333333;
+      line-height: 1.3;
+      height: 2.6em; /* Máximo 2 líneas de texto */
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      margin-bottom: 8px;
+    }
+
+    .price-tag {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #c84b31;
+      margin-bottom: 2px;
+    }
+
+    .wholesale-tag {
+      font-size: 0.75rem;
+      color: #28a745;
+      font-weight: 600;
+      background-color: #e8f5e9;
+      padding: 2px 6px;
+      border-radius: 4px;
+      display: inline-block;
+      align-self: flex-start;
+    }
+
+    /* Estado de Carga / Sin productos */
+    .no-results {
+      text-align: center;
+      padding: 40px 20px;
+      color: #888888;
+      font-size: 0.95rem;
+      grid-column: span 2;
+    }
+  </style>
 </head>
 <body>
 
-    <div class="app-container">
-        <div class="header">
-            <div class="logo-icon">🏪</div>
-            <div class="header-text">
-                <h1>Mi Abarrotes</h1>
-                <p>Catálogo Digital</p>
-            </div>
-        </div>
+  <!-- Encabezado de la Tienda -->
+  <header>
+    <h1>🏪 Tienda A</h1>
+    <p>Catálogo Digital de Productos</p>
+  </header>
 
-        <input type="text" class="search-bar" id="buscador" placeholder="Buscar producto..." onkeyup="dibujar()">
+  <!-- Barra de Búsqueda Activa -->
+  <div class="search-container">
+    <input type="text" id="searchInput" class="search-input" placeholder="Buscar producto...">
+  </div>
 
-        <div class="categories">
-            <div class="pill active" onclick="filtrar('Todo', this)">Todo</div>
-            <div class="pill" onclick="filtrar('Abarrotes', this)">Abarrotes</div>
-            <div class="pill" onclick="filtrar('Bebidas', this)">Bebidas</div>
-            <div class="pill" onclick="filtrar('Dulces', this)">Dulces</div>
-        </div>
+  <!-- NUEVOS SEGMENTOS Y CATEGORÍAS COMPLETAS -->
+  <div class="categories-menu" id="categoriesMenu">
+    <button class="category-btn active" onclick="filterCategory('Todos')">Todos</button>
+    <button class="category-btn" onclick="filterCategory('Abarrotes')">Abarrotes</button>
+    <button class="category-btn" onclick="filterCategory('Bebidas')">Bebidas</button>
+    <button class="category-btn" onclick="filterCategory('Botanas')">Botanas</button>
+    <button class="category-btn" onclick="filterCategory('Lácteos')">Lácteos</button>
+    <button class="category-btn" onclick="filterCategory('Limpieza')">Limpieza</button>
+    <button class="category-btn" onclick="filterCategory('Higiene Personal')">Higiene Personal</button>
+    <button class="category-btn" onclick="filterCategory('Dulcería')">Dulcería</button>
+  </div>
 
-        <div class="products-grid" id="lista-productos"></div>
+  <!-- Título Dinámico de la Sección -->
+  <div class="section-title" id="currentSectionTitle">Todos los Productos</div>
 
-        <footer>Mi Abarrotes — Catálogo Digital</footer>
-    </div>
+  <!-- Rejilla Inmediata donde cargan los Productos -->
+  <div class="products-grid" id="productsContainer">
+    <div class="no-results">Conectando a la base de datos...</div>
+  </div>
 
-    <script>
-        // Configuración enlazada a tu proyecto tienda-angel
-        const firebaseConfig = {
-            apiKey: "AIzaSyDrzWm0QZD10_3eGyIG",
-            authDomain: "tienda-angel.firebaseapp.com",
-            databaseURL: "https://tienda-angel-default-rtdb.firebaseio.com",
-            projectId: "tienda-angel",
-            storageBucket: "tienda-angel.appspot.com"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
+  <script>
+    // Configuración real y exacta de tu Firebase integrada directamente
+    const firebaseConfig = {
+      apiKey: "AIzaSyAslT9f8-b8g_L31jSOnN_vGv1M7Z_2b7w",
+      authDomain: "tienda-angel.firebaseapp.com",
+      databaseURL: "https://tienda-angel-default-rtdb.firebaseio.com/",
+      projectId: "tienda-angel",
+      storageBucket: "tienda-angel.appspot.com",
+      messagingSenderId: "1074151244018",
+      appId: "1:1074151244018:web:75736f86b7296da1ec5090"
+    };
 
-        let productos = [];
-        let catActual = 'Todo';
+    // Inicializar Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database().ref("productos");
 
-        db.ref('productos').on('value', (snapshot) => {
-            const data = snapshot.val();
-            productos = [];
-            if(data) {
-                Object.keys(data).forEach(id => { productos.push({ id, ...data[id] }); });
-            }
-            dibujar();
+    let arrayProductos = [];
+    let categoriaSeleccionada = "Todos";
+
+    // Escuchar los datos en tiempo real
+    db.on("value", (snapshot) => {
+      arrayProductos = [];
+      snapshot.forEach((childSnapshot) => {
+        arrayProductos.push({
+          id: childSnapshot.key,
+          ...childSnapshot.val()
         });
+      });
+      renderizarProductos();
+    });
 
-        function dibujar() {
-            const grid = document.getElementById('lista-productos');
-            grid.innerHTML = '';
-            const query = document.getElementById('buscador').value.toLowerCase();
+    // Mostrar Productos en Pantalla
+    function renderizarProductos() {
+      const container = document.getElementById("productsContainer");
+      const textoBusqueda = document.getElementById("searchInput").value.toLowerCase();
+      container.innerHTML = "";
 
-            productos.forEach(p => {
-                if((catActual === 'Todo' || p.categoria === catActual) && p.nombre.toLowerCase().includes(query)) {
-                    grid.innerHTML += `
-                        <div class="product-card">
-                            <span class="category-tag">${p.categoria}</span>
-                            <div class="product-image-container">
-                                <img src="${p.imagen || 'https://via.placeholder.com/100?text=📦'}" alt="Producto">
-                            </div>
-                            <div class="product-info">
-                                <h3 class="product-title">${p.nombre}</h3>
-                                <div>
-                                    <div class="price-container">$${parseFloat(p.precioPieza).toFixed(2)} <span class="price-unit">/ pza</span></div>
-                                    <div class="wholesale">Mayoreo $${parseFloat(p.precioMayoreo).toFixed(2)}</div>
-                                </div>
-                            </div>
-                        </div>`;
-                }
-            });
-        }
+      // Filtrar por categoría y buscador
+      const productosFiltrados = arrayProductos.filter(prod => {
+        const cumpleCategoria = (categoriaSeleccionada === "Todos" || prod.categoria === categoriaSeleccionada);
+        const cumpleBusqueda = prod.nombre.toLowerCase().includes(textoBusqueda);
+        return cumpleCategoria && cumpleBusqueda;
+      });
 
-        function filtrar(cat, boton) {
-            catActual = cat;
-            document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
-            boton.classList.add('active');
-            dibujar();
-        }
-    </script>
+      if (productosFiltrados.length === 0) {
+        container.innerHTML = '<div class="no-results">No se encontraron productos disponibles.</div>';
+        return;
+      }
+
+      // Dibujar cada tarjeta de producto (Sin usar parseFloat para evitar el NaN)
+      productosFiltrados.forEach(prod => {
+        const card = document.createElement("div");
+        card.className = "product-card";
+
+        card.innerHTML = `
+          <div class="product-image-wrapper">
+            <img class="product-image" src="${prod.imagen || 'https://via.placeholder.com/150?text=Sin+Foto'}" alt="${prod.nombre}">
+          </div>
+          <div class="product-info">
+            <div class="product-name">${prod.nombre}</div>
+            <div class="price-tag">$${prod.precioPza} <span style="font-size:0.7rem; color:#666; font-weight:400;">Pza</span></div>
+            <div class="wholesale-tag">Mayoreo: $${prod.precioMay}</div>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    // Lógica de filtrado por botones
+    function filterCategory(categoria) {
+      categoriaSeleccionada = categoria;
+      document.getElementById("currentSectionTitle").innerText = categoria === "Todos" ? "Todos los Productos" : categoria;
+      
+      // Cambiar clase activa en los botones
+      const buttons = document.querySelectorAll(".category-btn");
+      buttons.forEach(btn => {
+        if (btn.innerText === categoria) btn.classList.add("active");
+        else btn.classList.remove("active");
+      });
+
+      renderizarProductos();
+    }
+
+    // Escuchar el buscador al escribir
+    document.getElementById("searchInput").addEventListener("input", renderizarProductos);
+  </script>
 </body>
 </html>
